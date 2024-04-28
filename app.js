@@ -5,19 +5,19 @@ const express = require('express');
 const app = express();
 
 // require cors
-const cors = require('cors');
+// const cors = require('cors');
 
 // parse the body of the request
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 // create whitelist for cors
-const corsOptions = {
-  origin: '*'
-}
+// const corsOptions = {
+//   origin: '*'
+// }
 
-// use cors
-app.use(cors(corsOptions));
+// // use cors
+// app.use(cors(corsOptions));
 
 // require cookie-parser
 app.use(require('cookie-parser')());

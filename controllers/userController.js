@@ -19,7 +19,7 @@ const client = new MongoClient(MONGODB_URI);
 const userController = {
   // get all users
   getUser: (req, res) => {
-    res.json({ message: `${req.user.name} is logged in successfully` });
+    return res.json({ message: `${req.user.name} is logged in successfully` });
   },
 
   // register function

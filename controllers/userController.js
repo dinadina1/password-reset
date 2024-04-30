@@ -130,7 +130,7 @@ const userController = {
       if (storeToken) {
         return res
           .status(200)
-          .json({ message: "Login Successfully", token: req.user });
+          .json({ message: "Login Successfully" });
       } else {
         return res.status(404).json({ message: "Something went wrong" });
       }

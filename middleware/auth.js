@@ -22,9 +22,6 @@ const auth = {
                 }
                 req.user = decoded;
             })
-            // if(req.user.email != req.body.email) {
-            //     return res.status(401).json({message: 'Invalid Token'});
-            // }
             next();
 
         }catch(err){

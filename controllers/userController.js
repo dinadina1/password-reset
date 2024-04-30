@@ -122,8 +122,8 @@ const userController = {
       const storeToken = await res.cookie("token", token, {
         httpOnly: true,
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours expiration
-        // secure: true,
-        // sameSite: "none"
+        secure: true,
+        sameSite: "none"
       });
 
       // check if token is stored

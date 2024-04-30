@@ -1,5 +1,5 @@
 // require mongodb
-const { MongoClient, ObjectId} = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 // require env variables from ./config
 const { MONGODB_URI, SECRET_KEY } = require("../utilities/config");
@@ -18,8 +18,29 @@ const client = new MongoClient(MONGODB_URI);
 // create userController object
 const userController = {
   // get all users
-  getUser: (req, res) => {
-    return res.json({ message: `${req.user.name} is logged in successfully` });
+  getUser: async (req, res) => {
+    try {
+      // connect to database
+      await client.connect();
+      // get the database
+      const DB = client.db("Guvi_Task");
+      // get the collection
+      const collection = DB.collection("users");
+
+      // check if user already exist
+      const user = await collection.findOne({ _id: new ObjectId(req.user.id) });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      return res.status(200).json({ user });
+
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    } finally {
+      // close the database connection
+      await client.close();
+    }
   },
 
   // register function
@@ -94,7 +115,7 @@ const userController = {
           name: user.name,
         },
         SECRET_KEY,
-        { expiresIn: "1m" }
+        { expiresIn: "2d" }
       );
 
       // set a cookie with the token
@@ -218,13 +239,13 @@ const userController = {
       // get the collection
       const collection = DB.collection("users");
       // get user data
-      const user = await collection.findOne({ 
+      const user = await collection.findOne({
         passwordResetCode: req.body.passwordResetCode,
-        passwordResetExpiresIn : {$gt: Date.now()}
+        passwordResetExpiresIn: { $gt: Date.now() },
       });
 
-      if(!user){
-        return res.status(404).json({message: "Invalid Token"});
+      if (!user) {
+        return res.status(404).json({ message: "Invalid Token" });
       }
 
       // hash password
@@ -234,26 +255,26 @@ const userController = {
       const newPassword = {
         password: hashPassword,
         passwordResetCode: null,
-        passwordResetExpiresIn: null
-      }
-      const updatePassword = await collection.updateOne({_id:user._id}, {$set: newPassword});
+        passwordResetExpiresIn: null,
+      };
+      const updatePassword = await collection.updateOne(
+        { _id: user._id },
+        { $set: newPassword }
+      );
 
       // check if password is updated
-      if(!updatePassword){
-        return res.status(404).json({message: "Something went wrong"});
+      if (!updatePassword) {
+        return res.status(404).json({ message: "Something went wrong" });
       }
-      return res.status(200).json({message: "Password reset successfully"});
-    }
-
-    catch (err) {
+      return res.status(200).json({ message: "Password reset successfully" });
+    } catch (err) {
       // return error message if error occurs
       return res.status(500).json({ message: err.message });
-    }
-    finally {
+    } finally {
       // close database connection
       await client.close();
     }
-  }
+  },
 };
 
 module.exports = userController;

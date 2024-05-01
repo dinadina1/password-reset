@@ -12,32 +12,38 @@ const nodemailer = require("nodemailer");
 
 // require jsonwebtoken
 const jwt = require("jsonwebtoken");
+
 // Creating database connection
 const client = new MongoClient(MONGODB_URI);
 
 // create userController object
 const userController = {
+
   // get all users
   getUser: async (req, res) => {
     try {
       // connect to database
       await client.connect();
+
       // get the database
       const DB = client.db("Guvi_Task");
+
       // get the collection
       const collection = DB.collection("users");
 
-      // check if user already exist
+      // check if user already exists
       const user = await collection.findOne({ _id: new ObjectId(req.user.id) });
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      return res.status(200).json({ user });
-
-    } catch (err) {
+      // Return the user
+      return res.status(200).json(user);
+    } 
+    catch (err) {
       return res.status(500).json({ message: err.message });
-    } finally {
+    } 
+    finally {
       // close the database connection
       await client.close();
     }
@@ -48,8 +54,10 @@ const userController = {
     try {
       // connect to database
       await client.connect();
+
       // get the database
       const DB = client.db("Guvi_Task");
+
       // get the collection
       const collection = DB.collection("users");
 
@@ -73,10 +81,12 @@ const userController = {
       } else {
         return res.status(404).json({ message: "Something went wrong" });
       }
-    } catch (err) {
+    } 
+    catch (err) {
       // return error message if error occurs
       return res.status(500).json({ message: err.message });
-    } finally {
+    } 
+    finally {
       // close the database connection
       await client.close();
     }
@@ -87,8 +97,10 @@ const userController = {
     try {
       // connect to database
       await client.connect();
+
       // get the database
       const DB = client.db("Guvi_Task");
+
       // get the collection
       const collection = DB.collection("users");
 
@@ -118,42 +130,23 @@ const userController = {
         { expiresIn: "2d" }
       );
 
-      // set a cookie with the token
-      const storeToken = await res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours expiration
-      });
-
-      // check if token is stored
-      if (storeToken) {
-        return res
-          .status(200)
-          .json({ message: "Login Successfully" });
-      } else {
-        return res.status(404).json({ message: "Something went wrong" });
-      }
-    } catch (err) {
+      return res.status(200).json({ message: "Login Successfully", token });
+    } 
+    catch (err) {
       // return error message if error occurs
       return res.status(500).json({ message: err.message });
-    } finally {
+    } 
+    finally {
       // close database connection
       await client.close();
     }
   },
 
-  // logout function
+
   logout: async (req, res) => {
     try {
-      // check if token is in cookie or not
-      const token = req.cookies.token;
-      if (token) {
-        // clear the cookie
-        res.clearCookie("token");
-      }
 
-      return res.status(200).json({ message: "Logout Successfully" });
+      res.status(200).json({ message: "Logout Successfully" });
     } catch (err) {
       // return error message if error occurs
       return res.status(500).json({ message: err.message });
@@ -165,10 +158,13 @@ const userController = {
     try {
       // connect to database
       await client.connect();
+
       // get the database
       const DB = client.db("Guvi_Task");
+
       // get the collection
       const collection = DB.collection("users");
+
       // get user data
       const user = await collection.findOne({ email: req.body.email });
 
@@ -220,10 +216,12 @@ const userController = {
       return res
         .status(200)
         .json({ message: "Password reset code sent to your email" });
-    } catch (err) {
+    } 
+    catch (err) {
       // return error message if error occurs
       return res.status(500).json({ message: err.message });
-    } finally {
+    } 
+    finally {
       // close database connection
       await client.close();
     }
@@ -234,10 +232,13 @@ const userController = {
     try {
       // connect to database
       await client.connect();
+
       // get the database
       const DB = client.db("Guvi_Task");
+
       // get the collection
       const collection = DB.collection("users");
+
       // get user data
       const user = await collection.findOne({
         passwordResetCode: req.body.passwordResetCode,
@@ -267,10 +268,12 @@ const userController = {
         return res.status(404).json({ message: "Something went wrong" });
       }
       return res.status(200).json({ message: "Password reset successfully" });
-    } catch (err) {
+    } 
+    catch (err) {
       // return error message if error occurs
       return res.status(500).json({ message: err.message });
-    } finally {
+    } 
+    finally {
       // close database connection
       await client.close();
     }

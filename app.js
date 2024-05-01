@@ -7,17 +7,18 @@ const app = express();
 // require cors
 const cors = require('cors');
 
-app.use(cors({
-  origin: '*',
-  credentials: true
-}));
+// require cookie parser
+const cookieParser = require("cookie-parser");
+
+// use cors to allow cross origin resource sharing
+app.use(cors());
+
+// require cookie-parser
+app.use(cookieParser());
 
 // parse the body of the request
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// require cookie-parser
-app.use(require("cookie-parser")());
 
 // require user routes
 app.use("/", require("./routes/user"));
